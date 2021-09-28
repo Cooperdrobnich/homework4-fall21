@@ -215,17 +215,19 @@ class TestAllMethods(unittest.TestCase):
 ### Write main function
 def main():
     inv1 = {"Pizza": 4, "Burger": 8, "Hotdog": 10}
-    inv2 = {"Popcorn": 10, "Ice Cream": 5, "Frozen lemonade": 6}
+    inv2 = {"Popcorn": 50, "Ice Cream": 5, "Frozen lemonade": 6}
     customer1 = Customer("Jerry", 100)
     customer2 = Customer("George", 500)
-    customer3 = Customer("Newman", 1000)
+    customer3 = Customer("Newman", 10)
     stall1 = Stall("Great Meals", inv1, 10)
     stall2 = Stall("Great Desserts", inv2, 5)
-    cashier1 = Cashier("Elaine", [stall1, stall2])
-    cashier2 = Cashier("Kramer", [stall1, stall2])
-    customer1.validate_order(cashier1, stall1, "Hotdog", 3)
-    customer2.validate_order(cashier2, stall2, "Popcorn", 1)
-    customer3.validate_order(cashier2, stall2, "Ice Cream", 3)
+    cashier1 = Cashier("Elaine", [stall1])
+    cashier2 = Cashier("Kramer", [stall2])
+    customer1.validate_order(cashier1, stall2, "Popcorn", 3)
+    customer2.validate_order(cashier2, stall2, "Ice Cream", 6)
+    customer3.validate_order(cashier2, stall2, "Popcorn", 40)
+    customer3.validate_order(cashier2, stall2, "Popcorn", 40)
+    customer3.validate_order(cashier2, stall2, "Frozen lemonade", 2)
     #Create different objects 
 
     #Try all cases in the validate_order function
