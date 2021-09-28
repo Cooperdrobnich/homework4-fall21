@@ -102,6 +102,8 @@ class Stall:
         total = stall.cost * quantity
         return total
         
+    def __str__(self):
+        return "Hello, we are " + self.name + "." + " This is the current menu " + str(list(self.inventory.keys())) + ". We charge $" + str(self.cost) + " per item. We have $" + str(self.money) + " in total."
 
 class TestAllMethods(unittest.TestCase):
     
@@ -194,12 +196,14 @@ class TestAllMethods(unittest.TestCase):
 	# Test validate order
     def test_validate_order(self):
         inventory = {"Burger":40, "Taco":50, "Fries": 5}
+        self.s2 = Stall("Tamale Train", inventory, cost = 9)
+        self.c2 = Cashier("East")
 		# case 1: test if a customer doesn't have enough money in their wallet to order
-        self.assertEqual(self.f1.order_food(self.s2, self.t1, "Burger", 500), None)
+        self.assertEqual(self.f1.validate_order(self.c2, self.s2, "Burger", 500), None)
 		# case 2: test if the stall doesn't have enough food left in stock
-        self.assertEqual(self.f1.order_food(self.s2, self.t2, "Fries", 6), None)
+        self.assertEqual(self.f1.validate_order(self.c2, self.s2, "Fries", 6), None)
 		# case 3: check if the cashier can order item from that stall
-        self.assertEqual(self.f1.order_food(self.s2, self.t2, "Fries", 2), None)
+        self.assertEqual(self.f1.validate_order(self.c2, self.s2, "Fries", 2), None)
 
     # Test if a customer can add money to their wallet
     def test_reload_money(self):
