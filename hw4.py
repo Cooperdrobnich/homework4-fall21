@@ -20,7 +20,7 @@ class Customer:
             print("Sorry, we don't have that vendor stall. Please try a different one.")
         elif not(stall.has_item(item_name, quantity)):  
             print("Our stall has run out of " + item_name + " :( Please try a different stall!")
-        elif self.wallet < stall.compute_cost(quantity): 
+        elif self.wallet < stall.compute_cost(stall, quantity): 
             print("Don't have enough money for that :( Please reload more money!")
         else:
             bill = cashier.place_order(stall, item_name, quantity) 
@@ -29,7 +29,7 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        stall += cashier.receive_payment(stall, amount)
+        cashier.receive_payment(stall, amount)
         self.wallet -= amount
 
     # The __str__ method prints the customer's information.    
@@ -64,7 +64,7 @@ class Cashier:
 	# Function returns cost of the order, using compute_cost method
     def place_order(self, stall, item, quantity):
         stall.process_order(item, quantity)
-        return stall.compute_cost(quantity) 
+        return stall.compute_cost(stall, quantity) 
     
     # string function.
     def __str__(self):
@@ -85,21 +85,22 @@ class Stall:
             self.earnings += self.cost * quantity
 
     def has_item(self, food_name, quantity):
-	    if food_name in self.inventory:
-		    if self.inventory[food_name] >= quantity:
-			    return True
-		    else:
-			    return False
-	    else:
-		    return False
+        if food_name in self.inventory:
+            if self.inventory[food_name] >= quantity:
+                return True
+            else:
+                return False
+        else:
+            return False
+    
     def stock_up(self, food_name, quantity):
-	    if food_name in self.inventory:
-		    self.inventory[food_name] += quantity
-	    else:
-		    self.inventory[food_name] = quantity
+        if food_name in self.inventory:
+            self.inventory[food_name] += quantity
+        else:
+            self.inventory[food_name] = quantity
 
     def compute_cost(self, stall, quantity):
-        total = stall.cost * quantity
+        total = (stall.cost * quantity)
         return total
         
     def __str__(self):
@@ -197,22 +198,34 @@ class TestAllMethods(unittest.TestCase):
     def test_validate_order(self):
         inventory = {"Burger":40, "Taco":50, "Fries": 5}
         self.s2 = Stall("Tamale Train", inventory, cost = 9)
-        self.c2 = Cashier("East")
+        self.c2 = Cashier("East", directory = [self.s1, self.s2])
 		# case 1: test if a customer doesn't have enough money in their wallet to order
-        self.assertEqual(self.f1.validate_order(self.c2, self.s2, "Burger", 500), None)
+        self.assertEqual(self.f1.validate_order(self.c2, self.s2, "Burger", 39), None)
 		# case 2: test if the stall doesn't have enough food left in stock
         self.assertEqual(self.f1.validate_order(self.c2, self.s2, "Fries", 6), None)
 		# case 3: check if the cashier can order item from that stall
-        self.assertEqual(self.f1.validate_order(self.c2, self.s2, "Fries", 2), None)
+        self.assertEqual(self.f1.validate_order(self.c2, self.s3, "Taco", 2), None)
 
     # Test if a customer can add money to their wallet
     def test_reload_money(self):
         old_wallet = self.f1.wallet
-        self.assertEqual(self.f1.withdraw_money(50), old_wallet + 50)
+        self.assertEqual(self.f1.reload_money(50), old_wallet + 50)
 
     
 ### Write main function
 def main():
+    inv1 = {"Pizza": 4, "Burger": 8, "Hotdog": 10}
+    inv2 = {"Popcorn": 10, "Ice Cream": 5, "Frozen lemonade": 6}
+    customer1 = Customer("Jerry", 100)
+    customer2 = Customer("George", 500)
+    customer3 = Customer("Newman", 1000)
+    stall1 = Stall("Great Meals", inv1, 10)
+    stall2 = Stall("Great Desserts", inv2, 5)
+    cashier1 = Cashier("Elaine", [stall1, stall2])
+    cashier2 = Cashier("Kramer", [stall1, stall2])
+    customer1.validate_order(cashier1, stall1, "Hotdog", 3)
+    customer2.validate_order(cashier2, stall2, "Popcorn", 1)
+    customer3.validate_order(cashier2, stall2, "Ice Cream", 3)
     #Create different objects 
 
     #Try all cases in the validate_order function
@@ -225,7 +238,7 @@ def main():
     
     #case 4: the customer successfully places an order
 
-    pass
+
 
 if __name__ == "__main__":
 	main()
