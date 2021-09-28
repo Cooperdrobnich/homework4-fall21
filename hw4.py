@@ -7,11 +7,12 @@ class Customer:
     # Constructor
     def __init__(self, name, wallet = 100):
         self.name = name
-        self.wallet = wallet
+        self.wallet = float(wallet)
 
     # Reload some deposit into the customer's wallet.
     def reload_money(self,deposit):
         self.wallet += deposit
+        return self.wallet
 
     # The customer orders the food and there could be different cases   
     def validate_order(self, cashier, stall, item_name, quantity):
@@ -28,7 +29,8 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        pass
+        stall += cashier.receive_payment(stall, amount)
+        self.wallet -= amount
 
     # The __str__ method prints the customer's information.    
     def __str__(self):
@@ -71,8 +73,37 @@ class Cashier:
 
 ## Complete the Stall class here following the instructions in HW_4_instructions_rubric
 class Stall:
-    
-    pass
+    def __init__(self, name, inventory = {}, cost = 7, earnings = 0):
+        self.name = name 
+        self.inventory = inventory
+        self.cost = cost 
+        self.earnings = float(earnings)
+
+    def process_order(self, food_name, quantity):
+        if food_name in self.inventory:
+            self.inventory[food_name] -= quantity
+            self.earnings += self.cost * quantity
+
+    def has_item(self, food_name, quantity):
+	    if food_name in self.inventory:
+		    if self.inventory[food_name] >= quantity:
+			    return True
+		    else:
+			    return False
+	    else:
+		    return False
+    def stock_up(self, food_name, quantity):
+	    if food_name in self.inventory:
+		    self.inventory[food_name] += quantity
+	    else:
+		    self.inventory[food_name] = quantity
+
+    def compute_cost(self, stall, quantity):
+	        total = stall.cost * quantity
+            
+        
+
+
 
 
 class TestAllMethods(unittest.TestCase):
